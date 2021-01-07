@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+# first container
+    backend:
+        # look for dockerfile and build the container
+        build: ./backend
+        container_name: backend
+        restart: always
+        # set enviornemt variables
+        environment: 
+            - APP_NAME=FlaskApp
+        #  mount the volumes so we can change code and hot reload
+        volumes:
+            - './backend:/backend'
+        #  expose port on the container, only to other containers
+        expose:
+            - 8080
+
+    nginx:
+        build: ./nginx
+        container_name: nginx
+        restart: always
+        # port allows the host machine to link to container
+        # pass 80 from host machine to 80 of the image filesystem
+        ports:
+            - "80:80"
+            
+    frontend:
+        build: ./frontend
+        container_name: frontend
+        restart: always
+        #  mount the volumes so we can change code and hot reload
+        volumes:
+            - './frontend:/frontend'
+
+        #  port allows the host machine to link to container
+        #  8000 for vue ui, 5000 for our vue app
+        ports:
+            - "8000:8000"
