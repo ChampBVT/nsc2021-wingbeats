@@ -13,6 +13,10 @@
     <b-button variant="primary" @click="uploadFile" :disabled="!Boolean(file)">UploadFile</b-button>
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/wav')">Play</b-button>
+    <audio controls>
+      <source src="http://localhost/api/v1/wav" type="audio/mpeg" />
+      Your browser does not support the audio tag.
+    </audio>
     <HelloWorld msg="Welcome to Your Vue.js App" />
   </div>
 </template>
