@@ -35,6 +35,5 @@ services:
             - './frontend:/frontend'
 
         #  port allows the host machine to link to container
-        #  8000 for vue ui, 5000 for our vue app
         ports:
             - "8000:8000"
