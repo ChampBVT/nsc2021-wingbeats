@@ -5,7 +5,7 @@ WORKDIR /frontend
 
 COPY . /frontend
 
-RUN yarn && yarn install
+RUN yarn global add @vue/cli && yarn install
 
 EXPOSE 8000
 
