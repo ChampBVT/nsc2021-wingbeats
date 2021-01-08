@@ -1,9 +1,10 @@
 # use python container image
-From python:3.7.9
+FROM python:3.7.9
 
 # set the working directory of the image filesystem 
 WORKDIR /backend
 
+ENV FLASK_ENV=development
 # copy current directory to the working directory 
 ADD . /backend
 
@@ -13,4 +14,4 @@ RUN pip install -r requirements.txt
 EXPOSE 8080
 
 # start the uWSGI
-CMD ["uwsgi", "app.ini"]
+CMD ["uwsgi", "uwsgi_conf.ini"]

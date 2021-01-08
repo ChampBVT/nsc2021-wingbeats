@@ -33,9 +33,10 @@ services:
         #  mount the volumes so we can change code and hot reload
         environment: 
             - NODE_ENV=development
+            - CHOKIDAR_USEPOLLING=true
         volumes:
             - './frontend:/frontend'
             - '/frontend/node_modules'
         #  port allows the host machine to link to container
-        ports:
-            - "8000:8000"
+        # ports:
+            # - "8000:8000"

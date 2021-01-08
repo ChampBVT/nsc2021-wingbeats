@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from 'axios';
 
-const api = axios.create({ baseURL: "http://localhost/api" });
+const api = axios.create({ baseURL: 'http://localhost/api/v1' });
 
 api.interceptors.request.use(
   config => {
