@@ -23,6 +23,8 @@ services:
         restart: always
         # port allows the host machine to link to container
         # pass 80 from host machine to 80 of the image filesystem
+        volumes:
+            - './nginx:/nginx'
         ports:
             - "80:80"
             
