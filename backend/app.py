@@ -17,6 +17,12 @@ def get_audio():
     return send_file(os.getcwd() + '/media/test.wav')
 
 
+@api.route('/mp3', methods=['GET'])
+@cross_origin()
+def get_audio():
+    return send_file(os.getcwd() + '/media/test2.mp3')
+
+
 @api.route('/upload', methods=['POST'])
 @cross_origin()
 def post_audio():
