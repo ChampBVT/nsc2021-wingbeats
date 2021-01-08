@@ -12,9 +12,18 @@
     <!--    {{ info }}-->
     <b-button variant="primary" @click="uploadFile" :disabled="!Boolean(file)">UploadFile</b-button>
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
-    <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/wav')">Play</b-button>
+    <b-button variant="primary" @click.prevent="playSound('http://0.0.0.0/api/v1/wav')">Play</b-button>
+    <b-button
+      variant="primary"
+      @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
+      >Play2</b-button
+    >
     <audio preload="auto" controls="">
-      <source src="http://localhost/api/v1/wav" type="audio/mpeg" />
+      <source src="http://0.0.0.0/api/v1/wav" type="audio/wav" />
+      Your browser does not support the audio tag.
+    </audio>
+    <audio preload="auto" controls="">
+      <source src="http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3" type="audio/mp3" />
       Your browser does not support the audio tag.
     </audio>
     <HelloWorld msg="Welcome to Your Vue.js App" />
