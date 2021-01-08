@@ -7,7 +7,7 @@ COPY . /frontend
 
 ENV NODE_ENV = development
 
-RUN yarn global add @vue/cli && yarn install
+RUN yarn add @vue/cli-service && yarn install
 
 EXPOSE 8000
 
