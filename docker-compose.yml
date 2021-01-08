@@ -31,6 +31,8 @@ services:
         container_name: frontend
         restart: always
         #  mount the volumes so we can change code and hot reload
+        environment: 
+            - NODE_ENV=development
         volumes:
             - './frontend:/frontend'
 

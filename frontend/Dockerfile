@@ -5,9 +5,9 @@ WORKDIR /frontend
 
 COPY . /frontend
 
-ENV NODE_ENV = development
+ENV NODE_ENV=development
 
-RUN yarn add @vue/cli-service && yarn install
+RUN yarn global add @vue/cli-service && yarn install --production=false
 
 EXPOSE 8000
 
