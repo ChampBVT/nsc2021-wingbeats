@@ -35,6 +35,8 @@ services:
             - NODE_ENV=development
         volumes:
             - './frontend:/frontend'
+            volumes:
+            - '/frontend/node_modules'
 
         #  port allows the host machine to link to container
         ports:
