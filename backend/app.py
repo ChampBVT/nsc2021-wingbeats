@@ -19,7 +19,7 @@ def get_audio():
 
 @api.route('/mp3', methods=['GET'])
 @cross_origin()
-def get_audio():
+def get_audio2():
     return send_file(os.getcwd() + '/media/test2.mp3')
 
 
