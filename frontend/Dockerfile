@@ -5,6 +5,8 @@ WORKDIR /frontend
 
 COPY . /frontend
 
+ENV NODE_ENV = development
+
 RUN yarn global add @vue/cli && yarn install
 
 EXPOSE 8000
