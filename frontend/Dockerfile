@@ -3,11 +3,13 @@ FROM node:lts-alpine
 # copy project files and folders to the current working directory (i.e. 'app' folder)
 WORKDIR /frontend
 
-COPY . /frontend
+COPY package*.json ./
 
 ENV NODE_ENV=development
 
-RUN yarn install 
+RUN yarn install
+
+COPY . .
 
 EXPOSE 8000
 
