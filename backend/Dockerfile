@@ -5,6 +5,7 @@ FROM python:3.7.9
 WORKDIR /backend
 
 ENV FLASK_ENV=development
+ENV FLASK_APP=app.py
 # copy current directory to the working directory 
 ADD . /backend
 
@@ -14,4 +15,5 @@ RUN pip install -r requirements.txt
 EXPOSE 8080
 
 # start the uWSGI
-CMD ["uwsgi", "uwsgi_conf.ini"]
+CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+#CMD ["uwsgi", "--ini", "uwsgi_conf.ini"]
