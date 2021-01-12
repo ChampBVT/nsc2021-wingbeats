@@ -1,10 +1,12 @@
 from flask import Flask, send_file, request
 from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
+from pathvalidate import sanitize_filename
 from flask import Blueprint
 import os
 
 UPLOAD_FOLDER = './media'
+ALLOWED_EXTENSIONS = ['wav']
 
 app = Flask(__name__)
 CORS(app)
@@ -28,9 +30,12 @@ def get_audio2():
 @cross_origin()
 def post_audio():
     file = request.files['file']
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-    return send_file(os.getcwd() + '/media/' + file.filename)
+    filename = sanitize_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    file_type = filename.split('.')[-1]
+    if file_type not in ALLOWED_EXTENSIONS:
+        return "Allowed File Type "+str(ALLOWED_EXTENSIONS), 400
+    return file_type, 200
 
 
 app.register_blueprint(api)
