@@ -4,6 +4,7 @@ from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
 from src.utils import allowed_file, get_extension
 from src.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
+from src.predict import import_model
 import os
 
 app = Flask(__name__)
@@ -62,7 +63,9 @@ def predict_file(filename):
     for file in files_list:
         if file == filename:
             # TODO
+            import_model()
             return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
+    import_model()
     return jsonify(description='File not found on server'), 400
 
 
