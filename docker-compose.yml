@@ -7,9 +7,6 @@ services:
         build: ./backend
         container_name: backend
         restart: always
-        # set enviornemt variables
-        environment: 
-            - APP_NAME=FlaskApp
         #  mount the volumes so we can change code and hot reload
         volumes:
             - './backend:/backend'

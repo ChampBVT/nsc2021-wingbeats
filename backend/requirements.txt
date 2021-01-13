@@ -6,3 +6,7 @@ librosa==0.8.0
 h5py==2.10.0
 PyYAML==5.3.1
 tensorflow==2.4.0
+apispec==4.0.0
+flask-swagger-ui==3.36.0
+apispec-webframeworks==0.5.2
+marshmallow==3.10.0

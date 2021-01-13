@@ -1,17 +1,19 @@
 # use python container image
 FROM python:3.7.9
 
-# set the working directory of the image filesystem 
-WORKDIR /backend
-
 ENV FLASK_ENV=development
 ENV FLASK_APP=app.py
 
-# copy current directory to the working directory 
-ADD . /backend
+# set the working directory of the image filesystem
+WORKDIR /backend
 
 # Install the python dependencies
+COPY requirements.txt /backend
+
 RUN pip install -r requirements.txt
+
+# copy current directory to the working directory
+COPY . /backend
 
 EXPOSE 8080
 
