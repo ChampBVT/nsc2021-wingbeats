@@ -5,6 +5,8 @@ from flask import Blueprint, jsonify
 from src.utils import allowed_file, get_extension
 from src.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 from src.predict import import_model
+from src.api_spec.swagger import swagger_ui_blueprint, SWAGGER_URL
+from src.api_spec.spec import spec
 import os
 
 app = Flask(__name__)
@@ -16,6 +18,34 @@ api = Blueprint('v1', __name__, url_prefix='/api/v1')
 @api.route('/upload', methods=['POST'])
 @cross_origin()
 def post_audio():
+    """
+    ---
+    post:
+      description: Uploading a selected file
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
+      responses:
+        '201':
+          description: File is uploaded
+          content:
+            application/json:
+              schema: DescSchema
+        '400':
+          description: File not found in request [OR] Not allowed file extension detects
+          content:
+            application/json:
+              schema: DescSchema
+
+      tags:
+          - Upload
+    """
     if 'file' not in request.files or request.files['file'].filename == '':
         return jsonify(description="File not found in request"), 400
     file = request.files['file']
@@ -35,6 +65,21 @@ def post_audio():
 @api.route('/files', methods=['GET'])
 @cross_origin()
 def get_all_files():
+    # TODO MAYBE CHANGES
+    """
+    ---
+    get:
+      description: Get every files information on the server
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: FilesSchema
+
+      tags:
+          - File
+    """
     json_array = []
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
@@ -46,18 +91,67 @@ def get_all_files():
 @api.route('/file/<filename>', methods=['GET'])
 @cross_origin()
 def get_file(filename):
+    """
+    ---
+    get:
+      description: Get a valid downloadable path of <filename> on the server
+      parameters:
+        - in: path
+          name: filename
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            audio/x-wav:
+              type: string
+              format: binary
+        '404':
+          description: File Not Found
+          content:
+            application/json:
+              DescSchema
+
+      tags:
+          - File
+    """
     filename = sanitize_filename(filename)
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
         if file == filename:
             # TODO
             return send_file(os.path.join(app.config['UPLOAD_FOLDER']) + '/' + filename), 200
-    return jsonify(description='File not found on server'), 400
+    return jsonify(description='File not found on server'), 404
 
 
 @api.route('/predict/<filename>', methods=['GET'])
 @cross_origin()
 def predict_file(filename):
+    # TODO OUTPUT RESPONSE
+    """
+    ---
+    get:
+      description: Make the server classified the <filename>
+      parameters:
+        - in: path
+          name: filename
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            audio/x-wav:
+              type: string
+              format: binary
+        '404':
+          description: File Not Found
+          content:
+            application/json:
+              DescSchema
+
+      tags:
+          - Prediction
+    """
     filename = sanitize_filename(filename)
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
@@ -66,10 +160,29 @@ def predict_file(filename):
             import_model()
             return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
     import_model()
-    return jsonify(description='File not found on server'), 400
+    return jsonify(description='File not found on server'), 404
 
 
 app.register_blueprint(api)
+
+with app.test_request_context():
+    for fn_name in app.view_functions:
+        if fn_name == 'static':
+            continue
+        print(f"Loading swagger docs for function: {fn_name}")
+        view_fn = app.view_functions[fn_name]
+        spec.path(view=view_fn)
+
+
+@app.route("/api/swagger.json")
+def create_swagger_spec():
+    """
+    Swagger API definition.
+    """
+    return jsonify(spec.to_dict())
+
+
+app.register_blueprint(swagger_ui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == "__main__":
     # port = int(os.environ.get('PORT', 8080))
