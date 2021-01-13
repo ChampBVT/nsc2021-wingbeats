@@ -25,7 +25,7 @@ def post_audio():
       requestBody:
         content:
           multipart/form-data:
-            schema:
+           schema:
             type: object
             properties:
               file:
@@ -110,7 +110,7 @@ def get_file(filename):
           description: File Not Found
           content:
             application/json:
-              DescSchema
+              schema: DescSchema
 
       tags:
           - File
@@ -147,7 +147,7 @@ def predict_file(filename):
           description: File Not Found
           content:
             application/json:
-              DescSchema
+              schema: DescSchema
 
       tags:
           - Prediction

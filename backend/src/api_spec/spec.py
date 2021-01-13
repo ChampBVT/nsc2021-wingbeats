@@ -8,8 +8,8 @@ from marshmallow import Schema, fields
 
 # Create an APISpec
 spec = APISpec(
-    title="My App",
-    version="1.0.0",
+    title="WingBeats",
+    version="0.0.1",
     openapi_version="3.0.3",
     plugins=[FlaskPlugin(), MarshmallowPlugin()]
 )
