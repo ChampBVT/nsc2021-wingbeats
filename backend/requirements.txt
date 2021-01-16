@@ -2,6 +2,7 @@ flask==1.1.2
 uWSGI==2.0.19.1
 flask-cors==3.0.10
 pathvalidate==2.3.2
+soundfile==0.10.3.post1
 librosa==0.8.0
 h5py==2.10.0
 PyYAML==5.3.1

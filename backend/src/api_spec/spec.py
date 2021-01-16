@@ -46,3 +46,9 @@ class FilesSchema(Schema):
 
 class DescSchema(Schema):
     description = fields.Str()
+
+
+class PredictionSchema(Schema):
+    counts = fields.Number()
+    species = fields.Number()
+

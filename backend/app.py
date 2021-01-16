@@ -2,9 +2,9 @@ from flask import Flask, send_file, request
 from flask_cors import CORS, cross_origin
 from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
-from src.utils import allowed_file, get_extension
+from src.utils import allowed_file, get_extension, check_length
 from src.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
-from src.predict import import_model
+from src.predict import predict
 from src.api_spec.swagger import swagger_ui_blueprint, SWAGGER_URL
 from src.api_spec.spec import spec
 import os
@@ -38,7 +38,7 @@ def post_audio():
             application/json:
               schema: DescSchema
         '400':
-          description: File not found in request [OR] Not allowed file extension detects
+          description: File not found in request [OR] Not allowed file extension detects [OR] File not meet minimum length
           content:
             application/json:
               schema: DescSchema
@@ -53,9 +53,11 @@ def post_audio():
     file_ext = get_extension(filename)
     if not allowed_file(filename):
         return jsonify(description="Allowed " + str(ALLOWED_EXTENSIONS) + " received " + file_ext), 400
+    if not check_length(filename):
+        return jsonify(description="The audio file should be at least 0.3 seconds"), 400
     # TODO
     duplicate_counts = 0
-    while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER']) + '/' + filename):
+    while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER']) + filename):
         filename = old_filename.replace('.' + file_ext, '') + " (" + str(duplicate_counts) + ")." + file_ext
         duplicate_counts = duplicate_counts + 1
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -120,7 +122,7 @@ def get_file(filename):
     for file in files_list:
         if file == filename:
             # TODO
-            return send_file(os.path.join(app.config['UPLOAD_FOLDER']) + '/' + filename), 200
+            return send_file(os.path.join(app.config['UPLOAD_FOLDER']) + filename), 200
     return jsonify(description='File not found on server'), 404
 
 
@@ -131,7 +133,7 @@ def predict_file(filename):
     """
     ---
     get:
-      description: Make the server classified the <filename>
+      description: Make the server classified the specific file Ex. Ae.Aegypti_1M_5D_25C_SmallCylinder_Cut1.wav
       parameters:
         - in: path
           name: filename
@@ -140,9 +142,8 @@ def predict_file(filename):
         '200':
           description: OK
           content:
-            audio/x-wav:
-              type: string
-              format: binary
+            application/json:
+              schema: PredictionSchema
         '404':
           description: File Not Found
           content:
@@ -157,9 +158,9 @@ def predict_file(filename):
     for file in files_list:
         if file == filename:
             # TODO
-            import_model()
-            return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
-    import_model()
+            species_idx, counts = predict(filename)
+            return jsonify(species=species_idx, counts=counts), 200
+            # return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
     return jsonify(description='File not found on server'), 404
 
 
