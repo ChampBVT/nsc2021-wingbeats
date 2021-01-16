@@ -2,12 +2,13 @@ from flask import Flask, send_file, request
 from flask_cors import CORS, cross_origin
 from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
-from src.utils import allowed_file, get_extension, check_length
+from src.utils import allowed_file, get_extension, check_length, last_modified, get_duration
 from src.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 from src.predict import predict
 from src.api_spec.swagger import swagger_ui_blueprint, SWAGGER_URL
 from src.api_spec.spec import spec
 import os
+import sys
 
 app = Flask(__name__)
 CORS(app)
@@ -64,6 +65,61 @@ def post_audio():
     return jsonify(description='Uploaded ' + filename), 201
 
 
+@api.route('/files', methods=['POST'])
+@cross_origin()
+def get_files_with_offset():
+    # TODO MAYBE CHANGES
+    """
+    ---
+    post:
+      description: Get files information with offset and limit on the server
+      requestBody:
+        content:
+          application/json:
+           schema: PaginationSchema
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: FilesSchema
+        '400':
+          description: offset not found in request body [OR] content-type is not JSON
+          content:
+            application/json:
+              schema: DescSchema
+
+      tags:
+          - File
+    """
+    if not request.is_json:
+        return jsonify(description='Missing JSON in request'), 400
+    offset = request.json.get('offset', None)
+    limit = request.json.get('limit', 10)
+    if offset is None:
+        return jsonify(description='Missing offset in request'), 400
+    json_array = []
+    files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
+    offset_count = 0
+    for file in files_list:
+        # TODO
+        if offset_count < offset:
+            offset_count = offset_count + 1
+            continue
+        json_array.append(
+            {
+                'filename': file,
+                'type': get_extension(file),
+                'date': last_modified(file, '%m/%d/%Y'),
+                'time': last_modified(file, '%H.%M %p'),
+                'length': get_duration(file)
+            }
+        )
+        if len(json_array) == limit:
+            break
+    return jsonify(files=json_array), 200
+
+
 @api.route('/files', methods=['GET'])
 @cross_origin()
 def get_all_files():
@@ -86,7 +142,15 @@ def get_all_files():
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
         # TODO
-        json_array.append({'filename': file, 'type': file.split('.')[-1]})
+        json_array.append(
+            {
+                'filename': file,
+                'type': get_extension(file),
+                'date': last_modified(file, '%m/%d/%Y'),
+                'time': last_modified(file, '%H.%M %p'),
+                'length': get_duration(file)
+            }
+        )
     return jsonify(files=json_array), 200
 
 
@@ -158,8 +222,8 @@ def predict_file(filename):
     for file in files_list:
         if file == filename:
             # TODO
-            species_idx, counts = predict(filename)
-            return jsonify(species=species_idx, counts=counts), 200
+            species_idx = predict(filename)
+            return jsonify(species=species_idx), 200
             # return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
     return jsonify(description='File not found on server'), 404
 

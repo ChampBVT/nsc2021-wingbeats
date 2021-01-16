@@ -11,3 +11,4 @@ apispec==4.0.0
 flask-swagger-ui==3.36.0
 apispec-webframeworks==0.5.2
 marshmallow==3.10.0
+pytz==2020.5

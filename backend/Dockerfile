@@ -7,7 +7,7 @@ ENV FLASK_APP=app.py
 # set the working directory of the image filesystem
 WORKDIR /backend
 
-RUN apt-get update && apt-get install -y libsndfile1
+RUN apt-get update && apt-get install -y libsndfile1 ffmpeg
 
 # Install the python dependencies
 COPY requirements.txt /backend

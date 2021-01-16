@@ -38,6 +38,9 @@ for tag in tags:
 class FileDescSchema(Schema):
     filename = fields.Str()
     type = fields.Str()
+    date = fields.Str()
+    time = fields.Str()
+    length = fields.Str()
 
 
 class FilesSchema(Schema):
@@ -51,4 +54,9 @@ class DescSchema(Schema):
 class PredictionSchema(Schema):
     counts = fields.Number()
     species = fields.Number()
+
+
+class PaginationSchema(Schema):
+    offset = fields.Number(required=True)
+    limit = fields.Number()
 
