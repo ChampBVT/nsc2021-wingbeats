@@ -3,7 +3,7 @@ FROM node:lts-alpine
 # copy project files and folders to the current working directory (i.e. 'app' folder)
 WORKDIR /frontend
 
-COPY package*.json /frontend
+COPY package*.json /frontend/
 
 ENV NODE_ENV=development
 
