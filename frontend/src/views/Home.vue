@@ -161,6 +161,12 @@ export default {
   border-radius: 10px;
 }
 
+img {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .button {
   margin-top: 10px;
   margin-bottom: 10px;
