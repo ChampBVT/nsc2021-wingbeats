@@ -27,7 +27,15 @@
     <!-- Section2: table of uploaded files -->
     <h3>Uploaded files</h3>
     <div>
-      <b-table striped hover :items="items" :fields="fields"></b-table>
+      <vue-good-table class="table"
+        @on-selected-rows-change="selectionChanged"
+        :columns="columns"
+        :rows="rows"
+        :select-options="{ enabled: true }"
+        :search-options="{ enabled: true }"
+        :sort-options="{ enabled: true }"
+        :pagination-options="{ enabled: true, mode: 'pages', perPageDropdown: [3, 5, 7, 10, 15],  perPage: 5}">
+      </vue-good-table>
     </div>
 
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
@@ -69,70 +77,49 @@ export default {
     return {
       file: null,
       info: null,
-      fields: [
+      columns: [
         {
-          key: 'file_name',
           label: 'File Name',
-          sortable: true,
+          field: 'name',
         },
         {
-          key: 'date',
           label: 'Date',
-          sortable: true,
+          field: 'date',
+          type: 'date',
+          dateInputFormat: 'dd-MM-yyyy',
+          dateOutputFormat: 'dd/MM/yyyy',
         },
         {
-          key: 'time',
           label: 'Time',
-          sortable: true,
+          field: 'time',
+          type: 'time',
+          timeInputFormat: 'hh:mm',
+          timeOutputFormat: 'hh:mm',
         },
         {
-          key: 'length',
-          label: 'Length',
-          sortable: true,
+          label: 'Length (Second)',
+          field: 'length',
+          type: 'number',
         },
         {
-          key: 'result',
           label: 'Result',
+          field: 'result',
           sortable: false,
         },
       ],
-      items: [
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_1',
-          date: '21/06/2019',
-          time: '9.09 AM',
-          length: '11 seconds',
-          result: 'More details',
-        },
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_2',
-          date: '17/06/2019',
-          time: '10.34 AM',
-          length: '45 seconds',
-          result: 'More details',
-        },
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_3',
-          date: '08/06/2019',
-          time: '6.12 PM',
-          length: '2 seconds',
-          result: 'More details',
-        },
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_4',
-          date: '13/05/2019',
-          time: '11.55 PM',
-          length: '37 seconds',
-          result: 'More details',
-        },
+      rows: [
+        { id:1, name:"Mosquitoes_1", date: '10-10-2020', time: '11.55 PM', length: 2 , result: 'More details' },
+        { id:2, name:"Mosquitoes_2", date: '31-10-2020', time: '12.00 AM', length: 11 ,result: 'More details' },
+        { id:3, name:"Mosquitoes_3", date: '12-10-2020', time: '10.55 AM', length: 7 ,result: 'More details' },
+        { id:4, name:"Mosquitoes_4", date: '1-10-2020', time: '09.55 PM', length: 41 ,result: 'More details' },
+        { id:5, name:"Mosquitoes_5", date: '4-11-2020', time: '12.55 AM', length: 35 ,result: 'More details' },
+        { id:6, name:"Mosquitoes_6", date: '5-11-2020', time: '01.55 PM', length: 5 ,result: 'More details' },
       ],
     };
   },
-  mounted() {},
+  mounted() {
+    this.$ref['my-table'].selectedRows;
+  },
   methods: {
     uploadFile() {
       uploadTest();
@@ -153,7 +140,7 @@ export default {
 <style scoped>
 .card {
   float: none;
-  margin: 30px auto 70px;
+  margin: 30px auto 100px;
   max-width: 40rem;
   background: #ebf5ff;
   border: 2px dashed #a1d6fb;
@@ -170,5 +157,16 @@ img {
 .button {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+h3 {
+  margin-bottom: 50px;
+}
+
+.table {
+  float: none;
+  margin: auto;
+  margin-bottom: 70px;
+  width: 80%;
 }
 </style>
