@@ -13,10 +13,8 @@ services:
         #  expose port on the container, only to other containers
         deploy:
             resources:
-                limits:
-                    memory: 512M
                 reservations:
-                    memory: 512M
+                    memory: 768M
         expose:
             - 8080
             
