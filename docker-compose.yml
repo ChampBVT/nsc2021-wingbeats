@@ -11,10 +11,6 @@ services:
         volumes:
             - './backend:/backend'
         #  expose port on the container, only to other containers
-        deploy:
-            resources:
-                reservations:
-                    memory: 768M
         expose:
             - 8080
             
