@@ -27,16 +27,31 @@
     <!-- Section2: table of uploaded files -->
     <h3>Uploaded files</h3>
     <div>
-      <b-table striped hover :items="items" :fields="fields"></b-table>
+      <vue-good-table
+        class="table"
+        :columns="columns"
+        :rows="rows"
+        :select-options="{ enabled: true }"
+        :search-options="{ enabled: true }"
+        :sort-options="{ enabled: true }"
+        :pagination-options="{ enabled: true, mode: 'pages', perPageDropdown: [3, 5, 7, 10, 15], perPage: 5 }"
+      >
+        <!-- Section3: Modal (After click "More details" button) -->
+        <!--        @on-selected-rows-change="selectionChanged"-->
+        <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field === 'result'">
+            <ModalMoreDetails test-prop="0.50" />
+          </span>
+        </template>
+      </vue-good-table>
     </div>
+
 
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
 
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/mp3')">Play</b-button>
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/wav')">Play3</b-button>
-    <b-button
-      variant="primary"
-      @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
+    <b-button variant="primary" @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
       >Play2</b-button
     >
     <audio preload="auto" controls="">
@@ -51,88 +66,82 @@
       <source src="http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3" />
       Your browser does not support the audio tag.
     </audio>
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+// import HelloWorld from '@/components/HelloWorld.vue';
 import { getTest, uploadTest } from '@/service/upload';
+import ModalMoreDetails from '@/components/ModalMoreDetails';
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld,
+    // HelloWorld,
+    ModalMoreDetails,
   },
   data() {
     return {
       file: null,
       info: null,
-      fields: [
+      columns: [
         {
-          key: 'file_name',
           label: 'File Name',
-          sortable: true,
+          field: 'name',
+          width: '20%',
         },
         {
-          key: 'date',
           label: 'Date',
-          sortable: true,
+          field: 'date',
+          type: 'date',
+          dateInputFormat: 'dd-MM-yyyy',
+          dateOutputFormat: 'dd/MM/yyyy',
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
         {
-          key: 'time',
           label: 'Time',
-          sortable: true,
+          field: 'time',
+          type: 'time',
+          timeInputFormat: 'hh:mm',
+          timeOutputFormat: 'hh:mm',
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
         {
-          key: 'length',
-          label: 'Length',
-          sortable: true,
+          label: 'Length (Second)',
+          field: 'length',
+          type: 'number',
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
         {
-          key: 'result',
           label: 'Result',
+          field: 'result',
           sortable: false,
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
       ],
-      items: [
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_1',
-          date: '21/06/2019',
-          time: '9.09 AM',
-          length: '11 seconds',
-          result: 'More details',
-        },
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_2',
-          date: '17/06/2019',
-          time: '10.34 AM',
-          length: '45 seconds',
-          result: 'More details',
-        },
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_3',
-          date: '08/06/2019',
-          time: '6.12 PM',
-          length: '2 seconds',
-          result: 'More details',
-        },
-        {
-          isActive: true,
-          file_name: 'Mosquitoes_4',
-          date: '13/05/2019',
-          time: '11.55 PM',
-          length: '37 seconds',
-          result: 'More details',
-        },
+      rows: [
+        { id: 1, name: 'Mosquitoes_1', date: '10-10-2020', time: '11.55 PM', length: 2, result: 'More Details' },
+        { id: 2, name: 'Mosquitoes_2', date: '31-10-2020', time: '12.00 AM', length: 11, result: 'More Details' },
+        { id: 3, name: 'Mosquitoes_3', date: '12-10-2020', time: '10.55 AM', length: 7, result: 'More Details' },
+        { id: 4, name: 'Mosquitoes_4', date: '1-10-2020', time: '09.55 PM', length: 41, result: 'More Details' },
+        { id: 5, name: 'Mosquitoes_5', date: '4-11-2020', time: '12.55 AM', length: 35, result: 'More Details' },
+        { id: 6, name: 'Mosquitoes_6', date: '5-11-2020', time: '01.55 PM', length: 5, result: 'More Details' },
       ],
     };
   },
-  mounted() {},
+  mounted() {
+    // this.$ref['my-table'].selectedRows;
+  },
   methods: {
     uploadFile() {
       uploadTest();
@@ -151,9 +160,13 @@ export default {
 </script>
 
 <style scoped>
+.home {
+  margin-bottom: 50px;
+}
+
 .card {
   float: none;
-  margin: 30px auto 70px;
+  margin: 30px auto 100px;
   max-width: 40rem;
   background: #ebf5ff;
   border: 2px dashed #a1d6fb;
@@ -161,8 +174,25 @@ export default {
   border-radius: 10px;
 }
 
+img {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .button {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+h3 {
+  margin-bottom: 50px;
+}
+
+.table {
+  float: none;
+  margin: auto;
+  margin-bottom: 70px;
+  width: 80%;
 }
 </style>

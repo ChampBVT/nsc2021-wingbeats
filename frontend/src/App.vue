@@ -34,6 +34,7 @@
   width: 50px;
   margin-right: 10px;
 }
+
 #nav a {
   color: #2c3e50;
 }
