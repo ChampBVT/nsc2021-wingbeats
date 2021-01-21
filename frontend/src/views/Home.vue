@@ -36,17 +36,17 @@
         :sort-options="{ enabled: true }"
         :pagination-options="{ enabled: true, mode: 'pages', perPageDropdown: [3, 5, 7, 10, 15], perPage: 5 }"
       >
+        <!-- Section3: Modal (After click "More details" button) -->
         <!--        @on-selected-rows-change="selectionChanged"-->
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field === 'result'">
-            <ModalMoreDetails test-prop="50" />
+            <ModalMoreDetails test-prop="0.50" />
           </span>
         </template>
       </vue-good-table>
     </div>
 
-    <!-- Section3: Modal (After click "More details" button) -->
-    <ModalMoreDetails />
+
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
 
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/mp3')">Play</b-button>
@@ -66,20 +66,20 @@
       <source src="http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3" />
       Your browser does not support the audio tag.
     </audio>
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
+// import HelloWorld from '@/components/HelloWorld.vue';
 import { getTest, uploadTest } from '@/service/upload';
 import ModalMoreDetails from '@/components/ModalMoreDetails';
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld,
+    // HelloWorld,
     ModalMoreDetails,
   },
   data() {
@@ -90,6 +90,7 @@ export default {
         {
           label: 'File Name',
           field: 'name',
+          width: '20%',
         },
         {
           label: 'Date',
@@ -97,6 +98,9 @@ export default {
           type: 'date',
           dateInputFormat: 'dd-MM-yyyy',
           dateOutputFormat: 'dd/MM/yyyy',
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
         {
           label: 'Time',
@@ -104,16 +108,25 @@ export default {
           type: 'time',
           timeInputFormat: 'hh:mm',
           timeOutputFormat: 'hh:mm',
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
         {
           label: 'Length (Second)',
           field: 'length',
           type: 'number',
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
         {
           label: 'Result',
           field: 'result',
           sortable: false,
+          thClass: 'text-center',
+          tdClass: 'text-center',
+          width: '20%',
         },
       ],
       rows: [
@@ -124,11 +137,6 @@ export default {
         { id: 5, name: 'Mosquitoes_5', date: '4-11-2020', time: '12.55 AM', length: 35, result: 'More Details' },
         { id: 6, name: 'Mosquitoes_6', date: '5-11-2020', time: '01.55 PM', length: 5, result: 'More Details' },
       ],
-      show: false,
-      headerBgVariant: 'primary',
-      headerTextVariant: 'light',
-      bodyBgVariant: 'light',
-      bodyTextVariant: 'dark',
     };
   },
   mounted() {
@@ -152,6 +160,10 @@ export default {
 </script>
 
 <style scoped>
+.home {
+  margin-bottom: 50px;
+}
+
 .card {
   float: none;
   margin: 30px auto 100px;
