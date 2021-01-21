@@ -1,0 +1,7 @@
+On Linux Droplet (DigitalOcean)
+sudo swapoff /swapfile
+sudo rm  /swapfile
+sudo dd if=/dev/zero of=/swapfile bs=1M count=1024 oflag=append conv=notrunc
+sudo mkswap /swapfile
+sudo chmod 600 /swapfile
+sudo swapon /swapfile
