@@ -27,75 +27,31 @@
     <!-- Section2: table of uploaded files -->
     <h3>Uploaded files</h3>
     <div>
-      <vue-good-table class="table"
-        @on-selected-rows-change="selectionChanged"
+      <vue-good-table
+        class="table"
         :columns="columns"
         :rows="rows"
         :select-options="{ enabled: true }"
         :search-options="{ enabled: true }"
         :sort-options="{ enabled: true }"
-        :pagination-options="{ enabled: true, mode: 'pages', perPageDropdown: [3, 5, 7, 10, 15],  perPage: 5}">
+        :pagination-options="{ enabled: true, mode: 'pages', perPageDropdown: [3, 5, 7, 10, 15], perPage: 5 }"
+      >
+        <!--        @on-selected-rows-change="selectionChanged"-->
+        <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field === 'result'">
+            <ModalMoreDetails test-prop="50" />
+          </span>
+        </template>
       </vue-good-table>
     </div>
 
     <!-- Section3: Modal (After click "More details" button) -->
-    <div>
-      <b-button @click="show=true" variant="primary">More Details</b-button>
-
-      <b-modal
-        v-model="show"
-        centered title="Result"
-        size="lg"
-        :header-bg-variant="headerBgVariant"
-        :header-text-variant="headerTextVariant"
-        :body-bg-variant="bodyBgVariant"
-        :body-text-variant="bodyTextVariant">
-        
-        <b-container fluid>
-          <b-row class="mb-3" cols="4">
-              <b-col>File Name:</b-col>
-              <b-col>Mosquitoes_1</b-col>
-              <b-col>Date:</b-col>
-              <b-col>10/10/2020</b-col>
-          </b-row>
-
-          <b-row class="mb-3" cols="4">
-              <b-col>Time:</b-col>
-              <b-col>11.55 PM</b-col>
-              <b-col>Length:</b-col>
-              <b-col>2 Seconds</b-col>
-          </b-row>
-
-          <div>
-              <vue-good-table
-                  :columns="columns_2"
-                  :rows="rows_2"/>
-          </div>
-
-        </b-container>
-
-        <template #modal-footer>
-          <div>
-            <b-button
-              variant="primary"
-              size="sm"
-              class="float-right"
-              @click="show=false">Close
-            </b-button>
-          </div>
-        </template>
-      </b-modal>
-    </div>
-
-
-
+    <ModalMoreDetails />
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
 
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/mp3')">Play</b-button>
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/wav')">Play3</b-button>
-    <b-button
-      variant="primary"
-      @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
+    <b-button variant="primary" @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
       >Play2</b-button
     >
     <audio preload="auto" controls="">
@@ -118,11 +74,13 @@
 // @ is an alias to /src
 import HelloWorld from '@/components/HelloWorld.vue';
 import { getTest, uploadTest } from '@/service/upload';
+import ModalMoreDetails from '@/components/ModalMoreDetails';
 
 export default {
   name: 'Home',
   components: {
     HelloWorld,
+    ModalMoreDetails,
   },
   data() {
     return {
@@ -159,45 +117,22 @@ export default {
         },
       ],
       rows: [
-        { id:1, name:"Mosquitoes_1", date: '10-10-2020', time: '11.55 PM', length: 2 , result: 'More Details' },
-        { id:2, name:"Mosquitoes_2", date: '31-10-2020', time: '12.00 AM', length: 11 ,result: 'More Details' },
-        { id:3, name:"Mosquitoes_3", date: '12-10-2020', time: '10.55 AM', length: 7 ,result: 'More Details' },
-        { id:4, name:"Mosquitoes_4", date: '1-10-2020', time: '09.55 PM', length: 41 ,result: 'More Details' },
-        { id:5, name:"Mosquitoes_5", date: '4-11-2020', time: '12.55 AM', length: 35 ,result: 'More Details' },
-        { id:6, name:"Mosquitoes_6", date: '5-11-2020', time: '01.55 PM', length: 5 ,result: 'More Details' },
+        { id: 1, name: 'Mosquitoes_1', date: '10-10-2020', time: '11.55 PM', length: 2, result: 'More Details' },
+        { id: 2, name: 'Mosquitoes_2', date: '31-10-2020', time: '12.00 AM', length: 11, result: 'More Details' },
+        { id: 3, name: 'Mosquitoes_3', date: '12-10-2020', time: '10.55 AM', length: 7, result: 'More Details' },
+        { id: 4, name: 'Mosquitoes_4', date: '1-10-2020', time: '09.55 PM', length: 41, result: 'More Details' },
+        { id: 5, name: 'Mosquitoes_5', date: '4-11-2020', time: '12.55 AM', length: 35, result: 'More Details' },
+        { id: 6, name: 'Mosquitoes_6', date: '5-11-2020', time: '01.55 PM', length: 5, result: 'More Details' },
       ],
       show: false,
       headerBgVariant: 'primary',
       headerTextVariant: 'light',
       bodyBgVariant: 'light',
       bodyTextVariant: 'dark',
-      columns_2: [
-      {
-        label: 'Species',
-        field: 'species',
-        sortable: false,
-      },
-      {
-        label: 'Sex',
-        field: 'sex',
-        sortable: false,
-      },
-      {
-        label: 'Probability',
-        field: 'prob',
-        type: 'percentage',
-      },
-      ],
-      rows_2: [
-          { id:1, species:"Ae.Aegypti", sex: "Female", prob: 0.88},
-          { id:2, species:"Ae.Aegypti", sex: "Male", prob: 0.12},
-          { id:3, species:"An.Minimus", sex: "Male", prob: 0.62},
-          { id:4, species:"An.Dirus", sex: "Female", prob: 0.44},
-      ],
     };
   },
   mounted() {
-    this.$ref['my-table'].selectedRows;
+    // this.$ref['my-table'].selectedRows;
   },
   methods: {
     uploadFile() {
