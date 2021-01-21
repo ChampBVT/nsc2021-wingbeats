@@ -1,7 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
-import Table from "../views/Table.vue";
 
 Vue.use(VueRouter);
 
@@ -20,11 +19,6 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue")
   },
-  {
-    path: "/table",
-    name: "Table",
-    component: Table
-  }
 ];
 
 const router = new VueRouter({
