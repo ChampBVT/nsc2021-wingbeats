@@ -7,6 +7,7 @@
         </b-navbar-brand>
         <div class="p-2"><router-link to="/">Home</router-link></div>
         <div class="p-2"><router-link to="/about">About</router-link></div>
+        <div class="p-2"><router-link to="/table">Table</router-link></div>
       </div>
     </div>
     <router-view />
