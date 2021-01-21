@@ -54,14 +54,15 @@ def post_audio():
     file_ext = get_extension(filename)
     if not allowed_file(filename):
         return jsonify(description="Allowed " + str(ALLOWED_EXTENSIONS) + " received " + file_ext), 400
-    if not check_length(filename):
-        return jsonify(description="The audio file should be at least 0.3 seconds"), 400
     # TODO
     duplicate_counts = 0
     while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER']) + filename):
         filename = old_filename.replace('.' + file_ext, '') + " (" + str(duplicate_counts) + ")." + file_ext
         duplicate_counts = duplicate_counts + 1
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    if not check_length(filename):
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return jsonify(description="The audio file should be at least 0.3 seconds"), 400
     return jsonify(description='Uploaded ' + filename), 201
 
 
