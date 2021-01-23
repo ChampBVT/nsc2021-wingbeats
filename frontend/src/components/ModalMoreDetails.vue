@@ -11,18 +11,20 @@
         :header-text-variant="headerTextVariant"
       >
         <b-container fluid>
-          <b-row class="mb-3" cols="4">
+          <b-row class="mb-3" cols="2">
             <b-col cols="2" class="font-weight-bold">File Name:</b-col>
-            <b-col cols="4" class="border">Mosquitoes_1</b-col>
-            <b-col cols="2" class="font-weight-bold">Date:</b-col>
-            <b-col cols="4" class="border">10/10/2020</b-col>
+            <b-col cols="9" class="border">{{file.filename}}</b-col>
           </b-row>
-
           <b-row class="mb-3" cols="4">
+            <b-col cols="2" class="font-weight-bold">Date:</b-col>
+            <b-col cols="3" class="border">{{file.date}}</b-col>
+            <b-col cols="1"></b-col>
             <b-col cols="2" class="font-weight-bold">Time:</b-col>
-            <b-col cols="4" class="border">11.55 PM</b-col>
+            <b-col cols="3" class="border">{{file.time}}</b-col>
+          </b-row>
+          <b-row class="mb-3" cols="2">
             <b-col cols="2" class="font-weight-bold">Length:</b-col>
-            <b-col cols="4" class="border">2 Seconds</b-col>
+            <b-col cols="3" class="border">{{file.length}}</b-col>
           </b-row>
 
           <div>
@@ -62,6 +64,7 @@ export default {
   name: 'ModalMoreDetails',
   props: {
     testProp: String,
+    file: Object
   },
   data() {
     return {
