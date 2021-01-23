@@ -1,7 +1,8 @@
 import api from './api';
 
 export const getTest = async () => {
-  const res = await api.get('/wav');
+  const res = await api.get('/files');
+  console.log(res.data);
   return res.data;
 };
 
