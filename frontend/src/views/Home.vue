@@ -46,7 +46,6 @@
       </vue-good-table>
     </div>
 
-
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
 
     <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/mp3')">Play</b-button>
@@ -80,7 +79,7 @@ export default {
   name: 'Home',
   components: {
     // HelloWorld,
-    ModalMoreDetails
+    ModalMoreDetails,
   },
   data() {
     return {
@@ -90,7 +89,7 @@ export default {
         {
           label: 'File Name',
           field: 'name',
-          width: '20%'
+          width: '20%',
         },
         {
           label: 'Date',
@@ -100,7 +99,7 @@ export default {
           dateOutputFormat: 'dd/MM/yyyy',
           thClass: 'text-center',
           tdClass: 'text-center',
-          width: '20%'
+          width: '20%',
         },
         {
           label: 'Time',
@@ -110,7 +109,7 @@ export default {
           timeOutputFormat: 'hh:mm',
           thClass: 'text-center',
           tdClass: 'text-center',
-          width: '20%'
+          width: '20%',
         },
         {
           label: 'Length (Second)',
@@ -118,7 +117,7 @@ export default {
           type: 'number',
           thClass: 'text-center',
           tdClass: 'text-center',
-          width: '20%'
+          width: '20%',
         },
         {
           label: 'Result',
@@ -126,7 +125,7 @@ export default {
           sortable: false,
           thClass: 'text-center',
           tdClass: 'text-center',
-          width: '20%'
+          width: '20%',
         },
       ],
       rows: [
@@ -135,8 +134,8 @@ export default {
         { id: 3, name: 'Mosquitoes_3', date: '12-10-2020', time: '10.55 AM', length: 7, result: 'More Details' },
         { id: 4, name: 'Mosquitoes_4', date: '1-10-2020', time: '09.55 PM', length: 41, result: 'More Details' },
         { id: 5, name: 'Mosquitoes_5', date: '4-11-2020', time: '12.55 AM', length: 35, result: 'More Details' },
-        { id: 6, name: 'Mosquitoes_6', date: '5-11-2020', time: '01.55 PM', length: 5, result: 'More Details' }
-      ]
+        { id: 6, name: 'Mosquitoes_6', date: '5-11-2020', time: '01.55 PM', length: 5, result: 'More Details' },
+      ],
     };
   },
   mounted() {
@@ -154,7 +153,7 @@ export default {
         const audio = new Audio(sound);
         audio.play();
       }
-    }
+    },
   },
 };
 </script>
