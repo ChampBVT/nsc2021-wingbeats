@@ -5,8 +5,9 @@
         <b-navbar-brand class="mr-auto p-2" href="#">
           <img src="./assets/wingbeats.png" class="d-inline-block align-center" id="navbar-logo">WingBeats
         </b-navbar-brand>
-        <div class="p-2"><router-link to="/">Home</router-link></div>
-        <div class="p-2"><router-link to="/about">About</router-link></div>
+        <div class="p-2">Home</div>
+        <!-- <div class="p-2"><router-link to="/">Home</router-link></div> -->
+        <!-- <div class="p-2"><router-link to="/about">About</router-link></div> -->
       </div>
     </div>
     <router-view />
