@@ -47,9 +47,6 @@
     </div>
 
     <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
-
-    <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/mp3')">Play</b-button>
-    <b-button variant="primary" @click.prevent="playSound('http://localhost/api/v1/wav')">Play3</b-button>
     <b-button variant="primary" @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
       >Play2</b-button
     >
