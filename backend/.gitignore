@@ -4,3 +4,7 @@ __pycache__/
 */*/temp*
 temp?
 media/
+**/.DS_Store
+**/*.icloud
+.DS_Store
+*.DS_Store
