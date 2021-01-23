@@ -51,14 +51,6 @@
       >Play2</b-button
     >
     <audio preload="auto" controls="">
-      <source src="http://localhost/api/v1/mp3" />
-      Your browser does not support the audio tag.
-    </audio>
-    <audio preload="auto" controls="">
-      <source src="http://localhost/api/v1/wav" />
-      Your browser does not support the audio tag.
-    </audio>
-    <audio preload="auto" controls="">
       <source src="http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3" />
       Your browser does not support the audio tag.
     </audio>
