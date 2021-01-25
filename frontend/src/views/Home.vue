@@ -4,78 +4,79 @@
     <div>
       <b-card id="uploadCard" title="Drag and drop to upload" img-src="../assets/upload.png" img-alt="upload logo" img-top>
         <b-form-file
-          v-model="file"
-          :state="Boolean(file)"
+          :state="formState()"
           accept=".wav"
           placeholder="Choose a file or drop it here..."
           drop-placeholder="Drop file here..."
+          v-on:change="checkFileExt"
         ></b-form-file>
-        <!--    &lt;!&ndash;    <b-progress :value="50" :max="100" animated></b-progress>&ndash;&gt;-->
-        <!--    {{ info }} -->
-
-        <b-button id="uploadButton" variant="primary" @click="uploadFile" :disabled="!Boolean(file)">Upload File</b-button>
+        <span v-if="errStatus" style="color:red">{{ errStatus }}</span>
+        <br />
+        <b-overlay :show="busy" rounded opacity="0.6" spinner-small spinner-variant="primary" class="">
+          <b-button id="uploadButton" variant="primary" @click="uploadFile" :disabled="!Boolean(file)">Upload</b-button>
+        </b-overlay>
         <b-card-text>
-          (Up to 50 Mb)<br /><br />
+          (Up to 100 Mb)<br /><br />
           *Recommend microphone: Behringer ECM 8000 or Primo EM172<br />
           *Only support Waveform Audio File Format (WAV)<br />
           *Length of the upload file is 1 to 60 seconds<br />
           *Mono channel
         </b-card-text>
+        <b-progress v-if="busy" :value="uploadPercentage" :max="100"></b-progress>
       </b-card>
     </div>
 
     <!-- Section2: table of uploaded files -->
-    <h3 id="Uploadedfiles">Uploaded files</h3>
+    <div>
+      <h3 id="uploadedFiles">Uploaded files{{ ' ' }}<b-spinner v-if="isLoading" type="grow" label="Spinning"></b-spinner></h3>
+    </div>
     <div>
       <vue-good-table
         id="table"
         :columns="columns"
         :rows="rows"
-        :select-options="{ enabled: true }"
         :search-options="{ enabled: true }"
-        :sort-options="{ enabled: true }"
+        :sort-options="{
+          enabled: true,
+          initialSortBy: [
+            { field: 'date', type: 'desc' },
+            { field: 'time', type: 'desc' },
+          ],
+        }"
         :pagination-options="{ enabled: true, mode: 'pages', perPageDropdown: [3, 5, 7, 10, 15], perPage: 5 }"
       >
         <!-- Section3: Modal (After click "More details" button) -->
         <!--        @on-selected-rows-change="selectionChanged"-->
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field === 'result'">
-            <ModalMoreDetails test-prop="88" 
-            v-bind:file="props.row" />
+            <ModalMoreDetails test-prop="88" v-bind:file="props.row" />
           </span>
         </template>
       </vue-good-table>
     </div>
-
-    <!-- <b-button variant="primary" @click="downloadFile">DownloadAllFile</b-button>
-    <b-button variant="primary" @click.prevent="playSound('http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3')"
-      >Play2</b-button
-    >
-    <audio preload="auto" controls="">
-      <source src="http://soundbible.com/mp3/Air Plane Ding-SoundBible.com-496729130.mp3" />
-      Your browser does not support the audio tag.
-    </audio>
-    <HelloWorld msg="Welcome to Your Vue.js App" /> --> 
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue';
-import { uploadTest } from '@/service/upload';
+import { uploadFile } from '@/service/upload';
 import { getFiles } from '@/service/get';
 import ModalMoreDetails from '@/components/ModalMoreDetails';
 
 export default {
   name: 'Home',
   components: {
-    // HelloWorld,
     ModalMoreDetails,
   },
   data() {
     return {
+      uploadPercentage: 0,
+      busy: false,
       file: null,
       info: null,
+      isTouch: false,
+      errStatus: null,
+      isLoading: true,
       columns: [
         {
           label: 'File Name',
@@ -86,9 +87,13 @@ export default {
         {
           label: 'Date',
           field: 'date',
-          thClass: 'text-center', 
+          type: 'date',
+          dateInputFormat: 'yyyy-MM-dd',
+          dateOutputFormat: 'dd/MM/yyyy',
+          thClass: 'text-center',
           tdClass: 'text-center body-table',
           width: '20%',
+          sortable: true,
         },
         {
           label: 'Time',
@@ -117,23 +122,41 @@ export default {
     };
   },
   mounted() {
-    // this.$ref['my-table'].selectedRows;
     this.getAllFiles();
   },
   methods: {
-    uploadFile() {
-      uploadTest();
+    async uploadFile() {
+      this.busy = true;
+      const res = await uploadFile(this.file, event => {
+        this.uploadPercentage = Math.round((100 * event.loaded) / event.total);
+      });
+      if (res.status === 400) {
+        this.errStatus = res.data.description;
+      } else if (res.status === 201) {
+        await this.getAllFiles();
+      }
+      this.busy = false;
+      this.uploadPercentage = 0;
     },
     async getAllFiles() {
       const json = await getFiles();
-      // console.log(json.files);
       this.rows = json.files;
+      this.isLoading = false;
     },
-    playSound(sound) {
-      if (sound) {
-        const audio = new Audio(sound);
-        audio.play();
+    checkFileExt(e) {
+      this.isTouch = true;
+      this.file = null;
+      this.errStatus = null;
+      if (e.target.files.length > 0) {
+        if (e.target.files[0].type === 'audio/wav') {
+          this.file = e.target.files[0];
+        }
       }
+    },
+    formState() {
+      if (this.file && !this.errStatus) return true;
+      else if (!this.isTouch) return null;
+      else return false;
     },
   },
 };
@@ -161,14 +184,13 @@ export default {
   margin-bottom: 10px;
 }
 
-#Uploadedfiles {
+#uploadedFiles {
   margin-bottom: 50px;
 }
 
 #table {
   float: none;
-  margin: auto;
-  margin-bottom: 70px;
+  margin: auto auto 70px;
   width: 80%;
 }
 
