@@ -147,7 +147,7 @@ def get_all_files():
             {
                 'filename': file,
                 'type': get_extension(file),
-                'date': last_modified(file, '%m/%d/%Y'),
+                'date': last_modified(file, '%Y-%m-%d'),
                 'time': last_modified(file, '%H.%M %p'),
                 'length': get_duration(file)
             }
@@ -188,6 +188,42 @@ def get_file(filename):
         if file == filename:
             # TODO
             return send_file(os.path.join(app.config['UPLOAD_FOLDER']) + filename), 200
+    return jsonify(description='File not found on server'), 404
+
+
+@api.route('/file/<filename>', methods=['DELETE'])
+@cross_origin()
+def delete_file(filename):
+    """
+    ---
+    delete:
+      description: Remove file <filename> on the server
+      parameters:
+        - in: path
+          name: filename
+          required: true
+      responses:
+        '200':
+          description: Removed
+          content:
+            application/json:
+              schema: DescSchema
+        '404':
+          description: File Not Found
+          content:
+            application/json:
+              schema: DescSchema
+
+      tags:
+          - File
+    """
+    filename = sanitize_filename(filename)
+    files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
+    for file in files_list:
+        if file == filename:
+            # TODO
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return jsonify(description='Removed '+filename), 200
     return jsonify(description='File not found on server'), 404
 
 
