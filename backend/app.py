@@ -1,5 +1,4 @@
 from flask import Flask, send_file, request
-from flask_cors import CORS, cross_origin
 from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
 from src.utils import allowed_file, get_extension, check_length, last_modified, get_duration
@@ -11,13 +10,11 @@ import os
 import sys
 
 app = Flask(__name__)
-CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Blueprint('v1', __name__, url_prefix='/api/v1')
 
 
 @api.route('/upload', methods=['POST'])
-@cross_origin()
 def post_audio():
     """
     ---
@@ -67,7 +64,6 @@ def post_audio():
 
 
 @api.route('/files', methods=['POST'])
-@cross_origin()
 def get_files_with_offset():
     # TODO MAYBE CHANGES
     """
@@ -122,7 +118,6 @@ def get_files_with_offset():
 
 
 @api.route('/files', methods=['GET'])
-@cross_origin()
 def get_all_files():
     # TODO MAYBE CHANGES
     """
@@ -147,7 +142,7 @@ def get_all_files():
             {
                 'filename': file,
                 'type': get_extension(file),
-                'date': last_modified(file, '%m/%d/%Y'),
+                'date': last_modified(file, '%Y-%m-%d'),
                 'time': last_modified(file, '%H.%M %p'),
                 'length': get_duration(file)
             }
@@ -156,7 +151,6 @@ def get_all_files():
 
 
 @api.route('/file/<filename>', methods=['GET'])
-@cross_origin()
 def get_file(filename):
     """
     ---
@@ -191,8 +185,42 @@ def get_file(filename):
     return jsonify(description='File not found on server'), 404
 
 
+@api.route('/file/<filename>', methods=['DELETE'])
+def delete_file(filename):
+    """
+    ---
+    delete:
+      description: Remove file <filename> on the server
+      parameters:
+        - in: path
+          name: filename
+          required: true
+      responses:
+        '200':
+          description: Removed
+          content:
+            application/json:
+              schema: DescSchema
+        '404':
+          description: File Not Found
+          content:
+            application/json:
+              schema: DescSchema
+
+      tags:
+          - File
+    """
+    filename = sanitize_filename(filename)
+    files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
+    for file in files_list:
+        if file == filename:
+            # TODO
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return jsonify(description='Removed '+filename), 200
+    return jsonify(description='File not found on server'), 404
+
+
 @api.route('/predict/<filename>', methods=['GET'])
-@cross_origin()
 def predict_file(filename):
     # TODO OUTPUT RESPONSE
     """
