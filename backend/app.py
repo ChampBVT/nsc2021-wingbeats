@@ -1,4 +1,5 @@
 from flask import Flask, send_file, request
+from flask_cors import CORS, cross_origin
 from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
 from src.utils import allowed_file, get_extension, check_length, last_modified, get_duration
@@ -10,6 +11,7 @@ import os
 import sys
 
 app = Flask(__name__)
+CORS(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Blueprint('v1', __name__, url_prefix='/api/v1')
 
@@ -118,6 +120,7 @@ def get_files_with_offset():
 
 
 @api.route('/files', methods=['GET'])
+@cross_origin()
 def get_all_files():
     # TODO MAYBE CHANGES
     """
