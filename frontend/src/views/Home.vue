@@ -49,7 +49,7 @@
         <!--        @on-selected-rows-change="selectionChanged"-->
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field === 'result'">
-            <ModalMoreDetail test-prop="88" v-bind:file="props.row" />
+            <ModalMoreDetail test-prop="88" v-bind:file="props.row" v-on:delete="onDeleteFile" />
           </span>
         </template>
       </vue-good-table>
@@ -61,6 +61,7 @@
 // @ is an alias to /src
 import { uploadFile } from '@/service/upload';
 import { getFiles } from '@/service/get';
+import { deleteFile } from '@/service/delete';
 import ModalMoreDetail from '@/components/ModalMoreDetail';
 
 export default {
@@ -158,6 +159,15 @@ export default {
       else if (!this.isTouch) return null;
       else return false;
     },
+    async onDeleteFile(filename){
+      console.log('Delete:',filename);
+      const res = await deleteFile(filename);
+      if (res.status === 404) {
+        this.errStatus = res.data.description;
+      } else if (res.status === 200) {
+        await this.getAllFiles();
+      }
+    }
   },
 };
 </script>

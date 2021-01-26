@@ -20,7 +20,9 @@
         <b-container fluid="">
           <b-row class="mb-3" cols="2">
             <b-col cols="2" class="font-weight-bold">File Name:</b-col>
-            <b-col cols="9" class="border">{{ file.filename }}</b-col>
+            <b-col cols="9" class="border">
+              <div style="overflow-wrap: anywhere;">{{ file.filename }}</div>
+            </b-col>
           </b-row>
           <b-row class="mb-3" cols="4">
             <b-col cols="2" class="font-weight-bold">Date:</b-col>
@@ -36,6 +38,12 @@
 
           <div>
             <vue-good-table :columns="columns_2" :rows="rows_2">
+              <div slot="emptystate">
+                <div class="text-center">
+                  <strong style="vertical-align: super">Predicting... </strong>
+                  <b-spinner variant="primary" label="Text Centered"></b-spinner>
+                </div>
+              </div>
               <template slot="table-row" slot-scope="props">
                 <span v-if="props.column.field === 'prob'">
                   <span v-if="props.row.prob >= 80">
@@ -57,8 +65,9 @@
         </b-container>
 
         <template #modal-footer>
-          <div>
-            <b-button variant="primary" size="sm" class="float-right" @click="show = false">Close</b-button>
+          <div style="display: flex; width: 100%; justify-content: space-between;">
+            <b-button variant="danger" size="sm" class="float-left" @click="onDelete">Delete</b-button>
+            <b-button size="sm" class="float-right" @click="show = false">Close</b-button>
           </div>
         </template>
       </b-modal>
@@ -67,6 +76,7 @@
 </template>
 
 <script>
+import { predictSpecies } from '@/service/predict';
 export default {
   name: 'ModalMoreDetail',
   props: {
@@ -86,8 +96,8 @@ export default {
           width: '35%',
         },
         {
-          label: 'Sex',
-          field: 'sex',
+          label: 'Gender',
+          field: 'gender',
           sortable: false,
           thClass: 'text-center',
           tdClass: 'text-center',
@@ -103,16 +113,22 @@ export default {
         },
       ],
       rows_2: [
-        { id: 1, species: 'Ae.Aegypti', sex: 'Female', prob: this.testProp },
+        /* { id: 1, species: 'Ae.Aegypti', sex: 'Female', prob: this.testProp },
         { id: 2, species: 'Ae.Aegypti', sex: 'Male', prob: 22 },
         { id: 3, species: 'An.Minimus', sex: 'Male', prob: 67 },
-        { id: 4, species: 'An.Dirus', sex: 'Female', prob: 54 },
+        { id: 4, species: 'An.Dirus', sex: 'Female', prob: 54 }, */
       ],
     };
   },
   methods: {
-    getPrediction() {
+    async getPrediction() {
       console.log(this.file.filename);
+      const json = await predictSpecies(this.file.filename);
+      console.log(json.species);
+      this.rows_2 = json.species.filter(sp => sp.prob > 0);
+    },
+    onDelete() {
+      this.$emit('delete', this.file.filename);
     },
   },
 };
