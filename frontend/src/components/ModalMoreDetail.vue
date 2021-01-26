@@ -6,7 +6,7 @@
         getPrediction();
       "
       variant="primary"
-      >More Details</b-button
+      >More Detail</b-button
     >
     <div class="modal">
       <b-modal
@@ -68,7 +68,7 @@
 
 <script>
 export default {
-  name: 'ModalMoreDetails',
+  name: 'ModalMoreDetail',
   props: {
     testProp: String,
     file: Object,

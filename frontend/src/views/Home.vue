@@ -49,7 +49,7 @@
         <!--        @on-selected-rows-change="selectionChanged"-->
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field === 'result'">
-            <ModalMoreDetails test-prop="88" v-bind:file="props.row" />
+            <ModalMoreDetail test-prop="88" v-bind:file="props.row" />
           </span>
         </template>
       </vue-good-table>
@@ -61,12 +61,12 @@
 // @ is an alias to /src
 import { uploadFile } from '@/service/upload';
 import { getFiles } from '@/service/get';
-import ModalMoreDetails from '@/components/ModalMoreDetails';
+import ModalMoreDetail from '@/components/ModalMoreDetail';
 
 export default {
   name: 'Home',
   components: {
-    ModalMoreDetails,
+    ModalMoreDetail,
   },
   data() {
     return {
