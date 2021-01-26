@@ -104,18 +104,19 @@ def get_files_with_offset():
     offset_count = 0
     for file in files_list:
         # TODO
-        if offset_count < offset:
-            offset_count = offset_count + 1
-            continue
-        json_array.append(
-            {
-                'filename': file,
-                'type': get_extension(file),
-                'date': last_modified(file, '%m/%d/%Y'),
-                'time': last_modified(file, '%H.%M %p'),
-                'length': get_duration(file)
-            }
-        )
+        if file.endswith('.wav'):
+            if offset_count < offset:
+                offset_count = offset_count + 1
+                continue
+            json_array.append(
+                {
+                    'filename': file,
+                    'type': get_extension(file),
+                    'date': last_modified(file, '%m/%d/%Y'),
+                    'time': last_modified(file, '%H.%M %p'),
+                    'length': get_duration(file)
+                }
+            )
         if len(json_array) == limit:
             break
     return jsonify(files=json_array), 200
@@ -143,15 +144,16 @@ def get_all_files():
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
         # TODO
-        json_array.append(
-            {
-                'filename': file,
-                'type': get_extension(file),
-                'date': last_modified(file, '%Y-%m-%d'),
-                'time': last_modified(file, '%H.%M %p'),
-                'length': get_duration(file)
-            }
-        )
+        if file.endswith('.wav'):
+            json_array.append(
+                {
+                    'filename': file,
+                    'type': get_extension(file),
+                    'date': last_modified(file, '%Y-%m-%d'),
+                    'time': last_modified(file, '%H.%M %p'),
+                    'length': get_duration(file)
+                }
+            )
     return jsonify(files=json_array), 200
 
 
@@ -257,10 +259,11 @@ def predict_file(filename):
     filename = sanitize_filename(filename)
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
-        if file == filename:
-            # TODO
-            species_idx = predict(filename)
-            return jsonify(species=species_idx), 200
+        if file.endswith('.wav'):
+            if file == filename:
+                # TODO
+                species_idx = predict(filename)
+                return jsonify(species=species_idx), 200
     return jsonify(description='File not found on server'), 404
 
 
