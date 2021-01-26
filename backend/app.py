@@ -62,7 +62,7 @@ def post_audio():
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     if not check_length(filename):
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify(description="The audio file should be at least 0.3 seconds"), 400
+        return jsonify(description="The audio file should be between 0.3 seconds and 120 seconds"), 400
     return jsonify(description='Uploaded ' + filename), 201
 
 
@@ -261,7 +261,6 @@ def predict_file(filename):
             # TODO
             species_idx = predict(filename)
             return jsonify(species=species_idx), 200
-            # return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
     return jsonify(description='File not found on server'), 404
 
 
