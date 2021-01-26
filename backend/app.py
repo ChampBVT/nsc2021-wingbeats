@@ -11,12 +11,13 @@ import os
 import sys
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/api/v1/*": {"origins": "http://0.0.0.0"}})
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Blueprint('v1', __name__, url_prefix='/api/v1')
 
 
 @api.route('/upload', methods=['POST'])
+@cross_origin()
 def post_audio():
     """
     ---
@@ -66,6 +67,7 @@ def post_audio():
 
 
 @api.route('/files', methods=['POST'])
+@cross_origin()
 def get_files_with_offset():
     # TODO MAYBE CHANGES
     """
@@ -154,6 +156,7 @@ def get_all_files():
 
 
 @api.route('/file/<filename>', methods=['GET'])
+@cross_origin()
 def get_file(filename):
     """
     ---
@@ -189,6 +192,7 @@ def get_file(filename):
 
 
 @api.route('/file/<filename>', methods=['DELETE'])
+@cross_origin()
 def delete_file(filename):
     """
     ---
@@ -224,6 +228,7 @@ def delete_file(filename):
 
 
 @api.route('/predict/<filename>', methods=['GET'])
+@cross_origin()
 def predict_file(filename):
     # TODO OUTPUT RESPONSE
     """
