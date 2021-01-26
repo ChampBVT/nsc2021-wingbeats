@@ -75,7 +75,9 @@
         <template #modal-footer>
           <div style="display: flex; width: 100%; justify-content: space-between;">
             <b-button variant="danger" size="sm" class="float-left" @click="onDelete">Delete</b-button>
-            <b-button size="sm" class="float-right" @click="onClose">Close</b-button>
+            <a @click="downloadFile" target="_self" download>
+              <b-button variant="success" size="sm" class="float-right">Download</b-button>
+            </a>
           </div>
         </template>
       </b-modal>
@@ -86,6 +88,7 @@
 <script>
 import { predictSpecies } from '@/service/predict';
 import { CancelToken } from 'axios';
+import { getFileHref } from '@/service/get';
 
 export default {
   name: 'ModalMoreDetail',
@@ -130,7 +133,6 @@ export default {
     async getPrediction() {
       this.cancelToken = CancelToken.source();
       const json = await predictSpecies(this.file.filename, this.cancelToken);
-      console.log(json.species.filter(sp => sp.prob > 0));
       this.rows_2 = json.species.filter(sp => sp.prob > 0);
     },
     onDelete() {
@@ -140,6 +142,13 @@ export default {
     onClose() {
       this.show = false;
       this.cancelToken.cancel('Closing modal');
+    },
+    downloadFile() {
+      const fileLink = document.createElement('a');
+      fileLink.href = getFileHref(this.file.filename);
+      document.body.appendChild(fileLink);
+      fileLink.click();
+      fileLink.remove();
     },
   },
 };
