@@ -10,6 +10,7 @@
     >
     <div class="modal">
       <b-modal
+        @hidden="onClose"
         v-model="show"
         centered
         title="Result"
@@ -37,7 +38,14 @@
           </b-row>
 
           <div>
-            <vue-good-table :columns="columns_2" :rows="rows_2">
+            <vue-good-table
+              :columns="columns_2"
+              :rows="rows_2"
+              :sort-options="{
+                enabled: false,
+                initialSortBy: { field: 'prob', type: 'desc' },
+              }"
+            >
               <div slot="emptystate">
                 <div class="text-center">
                   <strong style="vertical-align: super">Predicting... </strong>
@@ -46,16 +54,16 @@
               </div>
               <template slot="table-row" slot-scope="props">
                 <span v-if="props.column.field === 'prob'">
-                  <span v-if="props.row.prob >= 80">
+                  <span v-if="props.row.prob >= 70">
                     <span style="color: #7FC008">{{ props.row.prob }}%</span>
                   </span>
-                  <span v-if="props.row.prob < 80 && props.row.prob >= 60">
+                  <span v-if="props.row.prob < 70 && props.row.prob >= 50">
                     <span style="color: #F0DB1B">{{ props.row.prob }}%</span>
                   </span>
-                  <span v-if="props.row.prob < 60 && props.row.prob >= 40">
+                  <span v-if="props.row.prob < 50 && props.row.prob >= 30">
                     <span style="color: #FFA800">{{ props.row.prob }}%</span>
                   </span>
-                  <span v-if="props.row.prob < 40">
+                  <span v-if="props.row.prob < 30">
                     <span style="color: #CF0808">{{ props.row.prob }}%</span>
                   </span>
                 </span>
@@ -67,7 +75,7 @@
         <template #modal-footer>
           <div style="display: flex; width: 100%; justify-content: space-between;">
             <b-button variant="danger" size="sm" class="float-left" @click="onDelete">Delete</b-button>
-            <b-button size="sm" class="float-right" @click="show = false">Close</b-button>
+            <b-button size="sm" class="float-right" @click="onClose">Close</b-button>
           </div>
         </template>
       </b-modal>
@@ -77,6 +85,8 @@
 
 <script>
 import { predictSpecies } from '@/service/predict';
+import { CancelToken } from 'axios';
+
 export default {
   name: 'ModalMoreDetail',
   props: {
@@ -85,6 +95,7 @@ export default {
   },
   data() {
     return {
+      cancelToken: null,
       show: false,
       headerBgVariant: 'primary',
       headerTextVariant: 'light',
@@ -112,23 +123,23 @@ export default {
           width: '30%',
         },
       ],
-      rows_2: [
-        /* { id: 1, species: 'Ae.Aegypti', sex: 'Female', prob: this.testProp },
-        { id: 2, species: 'Ae.Aegypti', sex: 'Male', prob: 22 },
-        { id: 3, species: 'An.Minimus', sex: 'Male', prob: 67 },
-        { id: 4, species: 'An.Dirus', sex: 'Female', prob: 54 }, */
-      ],
+      rows_2: [],
     };
   },
   methods: {
     async getPrediction() {
-      console.log(this.file.filename);
-      const json = await predictSpecies(this.file.filename);
-      console.log(json.species);
+      this.cancelToken = CancelToken.source();
+      const json = await predictSpecies(this.file.filename, this.cancelToken);
+      console.log(json.species.filter(sp => sp.prob > 0));
       this.rows_2 = json.species.filter(sp => sp.prob > 0);
     },
     onDelete() {
       this.$emit('delete', this.file.filename);
+      this.show = false;
+    },
+    onClose() {
+      this.show = false;
+      this.cancelToken.cancel('Closing modal');
     },
   },
 };

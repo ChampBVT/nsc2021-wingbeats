@@ -123,7 +123,7 @@ export default {
       rows: [],
     };
   },
-  mounted() {
+  created() {
     this.getAllFiles();
   },
   methods: {
@@ -153,12 +153,10 @@ export default {
       if (e.target.files.length === 0 || e.target.files[0].type !== 'audio/wav') {
         return;
       }
-
       if (fileSize < limitSize) {
         this.file = e.target.files[0];
         return;
       }
-
       this.errStatus = 'File size too large';
     },
     formState() {
@@ -167,7 +165,6 @@ export default {
       else return false;
     },
     async onDeleteFile(filename) {
-      console.log('Delete:', filename);
       const res = await deleteFile(filename);
       if (res.status === 404) {
         this.errStatus = res.data.description;
