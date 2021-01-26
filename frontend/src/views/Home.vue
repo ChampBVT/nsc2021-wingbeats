@@ -62,6 +62,7 @@
 import { uploadFile } from '@/service/upload';
 import { getFiles } from '@/service/get';
 import { deleteFile } from '@/service/delete';
+import { limitSize } from '@/constant/config';
 import ModalMoreDetail from '@/components/ModalMoreDetail';
 
 export default {
@@ -148,26 +149,32 @@ export default {
       this.isTouch = true;
       this.file = null;
       this.errStatus = null;
-      if (e.target.files.length > 0) {
-        if (e.target.files[0].type === 'audio/wav') {
-          this.file = e.target.files[0];
-        }
+      const fileSize = e.target.files[0].size / (1024 * 1024);
+      if (e.target.files.length === 0 || e.target.files[0].type !== 'audio/wav') {
+        return;
       }
+
+      if (fileSize < limitSize) {
+        this.file = e.target.files[0];
+        return;
+      }
+
+      this.errStatus = 'File size too large';
     },
     formState() {
       if (this.file && !this.errStatus) return true;
       else if (!this.isTouch) return null;
       else return false;
     },
-    async onDeleteFile(filename){
-      console.log('Delete:',filename);
+    async onDeleteFile(filename) {
+      console.log('Delete:', filename);
       const res = await deleteFile(filename);
       if (res.status === 404) {
         this.errStatus = res.data.description;
       } else if (res.status === 200) {
         await this.getAllFiles();
       }
-    }
+    },
   },
 };
 </script>
