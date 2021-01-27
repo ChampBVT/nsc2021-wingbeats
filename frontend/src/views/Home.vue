@@ -16,10 +16,10 @@
           <b-button id="uploadButton" variant="primary" @click="uploadFile" :disabled="!Boolean(file)">Upload</b-button>
         </b-overlay>
         <b-card-text>
-          (Up to 100 Mb)<br /><br />
+          (Up to 100 MB)<br /><br />
           *Recommend microphone: Behringer ECM 8000 or Primo EM172<br />
           *Only support Waveform Audio File Format (WAV)<br />
-          *Length of the upload file is 1 to 120 seconds<br />
+          *Length of the upload file is 0.3 to 120 seconds<br />
           *Mono channel
         </b-card-text>
         <b-progress v-if="busy" :value="uploadPercentage" :max="100"></b-progress>
@@ -157,7 +157,7 @@ export default {
         this.file = e.target.files[0];
         return;
       }
-      this.errStatus = 'File size too large';
+      this.errStatus = 'File size is too large';
     },
     formState() {
       if (this.file && !this.errStatus) return true;
