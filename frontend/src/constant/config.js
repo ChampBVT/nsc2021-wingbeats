@@ -1,1 +1,1 @@
-export const limitSize = 1000;
+export const limitSize = 100;
