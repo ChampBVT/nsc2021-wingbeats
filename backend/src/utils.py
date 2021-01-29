@@ -18,7 +18,7 @@ def get_extension(filename):
 
 def check_length(filename):
     x, sr = librosa.load(os.path.join(UPLOAD_FOLDER) + filename, sr=SAMPLING_RATE)
-    if len(x) < LENGTH_TARGET:
+    if len(x) < LENGTH_TARGET or len(x) > SAMPLING_RATE * 120:
         return False
     else:
         return True

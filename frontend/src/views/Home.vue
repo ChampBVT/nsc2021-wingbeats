@@ -16,10 +16,10 @@
           <b-button id="uploadButton" variant="primary" @click="uploadFile" :disabled="!Boolean(file)">Upload</b-button>
         </b-overlay>
         <b-card-text>
-          (Up to 100 Mb)<br /><br />
+          (Up to 100 MB)<br /><br />
           *Recommend microphone: Behringer ECM 8000 or Primo EM172<br />
           *Only support Waveform Audio File Format (WAV)<br />
-          *Length of the upload file is 1 to 60 seconds<br />
+          *Length of the upload file is 0.3 to 120 seconds<br />
           *Mono channel
         </b-card-text>
         <b-progress v-if="busy" :value="uploadPercentage" :max="100"></b-progress>
@@ -49,7 +49,7 @@
         <!--        @on-selected-rows-change="selectionChanged"-->
         <template slot="table-row" slot-scope="props">
           <span v-if="props.column.field === 'result'">
-            <ModalMoreDetails test-prop="88" v-bind:file="props.row" />
+            <ModalMoreDetail test-prop="88" v-bind:file="props.row" v-on:delete="onDeleteFile" />
           </span>
         </template>
       </vue-good-table>
@@ -61,12 +61,14 @@
 // @ is an alias to /src
 import { uploadFile } from '@/service/upload';
 import { getFiles } from '@/service/get';
-import ModalMoreDetails from '@/components/ModalMoreDetails';
+import { deleteFile } from '@/service/delete';
+import { limitSize } from '@/constant/config';
+import ModalMoreDetail from '@/components/ModalMoreDetail';
 
 export default {
   name: 'Home',
   components: {
-    ModalMoreDetails,
+    ModalMoreDetail,
   },
   data() {
     return {
@@ -121,7 +123,7 @@ export default {
       rows: [],
     };
   },
-  mounted() {
+  created() {
     this.getAllFiles();
   },
   methods: {
@@ -147,16 +149,28 @@ export default {
       this.isTouch = true;
       this.file = null;
       this.errStatus = null;
-      if (e.target.files.length > 0) {
-        if (e.target.files[0].type === 'audio/wav') {
-          this.file = e.target.files[0];
-        }
+      const fileSize = e.target.files[0].size / (1024 * 1024);
+      if (e.target.files.length === 0 || e.target.files[0].type !== 'audio/wav') {
+        return;
       }
+      if (fileSize < limitSize) {
+        this.file = e.target.files[0];
+        return;
+      }
+      this.errStatus = 'File size is too large';
     },
     formState() {
       if (this.file && !this.errStatus) return true;
       else if (!this.isTouch) return null;
       else return false;
+    },
+    async onDeleteFile(filename) {
+      const res = await deleteFile(filename);
+      if (res.status === 404) {
+        this.errStatus = res.data.description;
+      } else if (res.status === 200) {
+        await this.getAllFiles();
+      }
     },
   },
 };

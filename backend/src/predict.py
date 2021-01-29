@@ -1,8 +1,9 @@
 import tensorflow as tf
 import librosa
 import numpy as np
+import math
 import os
-from src.config import MODEL, SAMPLING_RATE, UPLOAD_FOLDER, LENGTH_TARGET
+from src.config import MODEL, SAMPLING_RATE, UPLOAD_FOLDER, LENGTH_TARGET, GENDER_DICT, SPECIES_DICT
 import sys
 
 model = tf.keras.models.load_model('./models/' + MODEL)
@@ -28,4 +29,5 @@ def most_occurrence(predict_list):
     total_sum = np.sum(mo)
     mo = (mo / total_sum) * 100.0
     rounded_mo = [round(elem, 2) for elem in mo]
-    return rounded_mo
+    map_dict = [{'species': SPECIES_DICT[math.floor(k/2)], 'gender': GENDER_DICT[k % 2], 'prob': v} for k, v in enumerate(rounded_mo)]
+    return map_dict

@@ -16,7 +16,7 @@ api.interceptors.response.use(
     return response;
   },
   error => {
-    if (error.response.data.description === 'The audio file should be at least 0.3 seconds') return error.response;
+    if (error.response && error.response.data) return error.response;
     return Promise.reject(error);
   }
 );

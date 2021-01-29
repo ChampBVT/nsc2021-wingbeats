@@ -1,4 +1,5 @@
 from flask import Flask, send_file, request
+from flask_cors import CORS, cross_origin
 from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
 from src.utils import allowed_file, get_extension, check_length, last_modified, get_duration
@@ -10,11 +11,13 @@ import os
 import sys
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/v1/*": {"origins": "http://0.0.0.0"}})
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 api = Blueprint('v1', __name__, url_prefix='/api/v1')
 
 
 @api.route('/upload', methods=['POST'])
+@cross_origin()
 def post_audio():
     """
     ---
@@ -59,11 +62,12 @@ def post_audio():
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     if not check_length(filename):
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return jsonify(description="The audio file should be at least 0.3 seconds"), 400
+        return jsonify(description="The audio file should be between 0.3 seconds and 120 seconds"), 400
     return jsonify(description='Uploaded ' + filename), 201
 
 
 @api.route('/files', methods=['POST'])
+@cross_origin()
 def get_files_with_offset():
     # TODO MAYBE CHANGES
     """
@@ -100,24 +104,26 @@ def get_files_with_offset():
     offset_count = 0
     for file in files_list:
         # TODO
-        if offset_count < offset:
-            offset_count = offset_count + 1
-            continue
-        json_array.append(
-            {
-                'filename': file,
-                'type': get_extension(file),
-                'date': last_modified(file, '%m/%d/%Y'),
-                'time': last_modified(file, '%H.%M %p'),
-                'length': get_duration(file)
-            }
-        )
+        if file.endswith('.wav'):
+            if offset_count < offset:
+                offset_count = offset_count + 1
+                continue
+            json_array.append(
+                {
+                    'filename': file,
+                    'type': get_extension(file),
+                    'date': last_modified(file, '%m/%d/%Y'),
+                    'time': last_modified(file, '%H.%M %p'),
+                    'length': get_duration(file)
+                }
+            )
         if len(json_array) == limit:
             break
     return jsonify(files=json_array), 200
 
 
 @api.route('/files', methods=['GET'])
+@cross_origin()
 def get_all_files():
     # TODO MAYBE CHANGES
     """
@@ -138,19 +144,21 @@ def get_all_files():
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
         # TODO
-        json_array.append(
-            {
-                'filename': file,
-                'type': get_extension(file),
-                'date': last_modified(file, '%Y-%m-%d'),
-                'time': last_modified(file, '%H.%M %p'),
-                'length': get_duration(file)
-            }
-        )
+        if file.endswith('.wav'):
+            json_array.append(
+                {
+                    'filename': file,
+                    'type': get_extension(file),
+                    'date': last_modified(file, '%Y-%m-%d'),
+                    'time': last_modified(file, '%H.%M %p'),
+                    'length': get_duration(file)
+                }
+            )
     return jsonify(files=json_array), 200
 
 
 @api.route('/file/<filename>', methods=['GET'])
+@cross_origin()
 def get_file(filename):
     """
     ---
@@ -186,6 +194,7 @@ def get_file(filename):
 
 
 @api.route('/file/<filename>', methods=['DELETE'])
+@cross_origin()
 def delete_file(filename):
     """
     ---
@@ -221,6 +230,7 @@ def delete_file(filename):
 
 
 @api.route('/predict/<filename>', methods=['GET'])
+@cross_origin()
 def predict_file(filename):
     # TODO OUTPUT RESPONSE
     """
@@ -249,11 +259,11 @@ def predict_file(filename):
     filename = sanitize_filename(filename)
     files_list = os.listdir(os.path.join(app.config['UPLOAD_FOLDER']))
     for file in files_list:
-        if file == filename:
-            # TODO
-            species_idx = predict(filename)
-            return jsonify(species=species_idx), 200
-            # return jsonify(species='Aedes Albopictus', gender='M', probability='70%'), 200
+        if file.endswith('.wav'):
+            if file == filename:
+                # TODO
+                species_idx = predict(filename)
+                return jsonify(species=species_idx), 200
     return jsonify(description='File not found on server'), 404
 
 
