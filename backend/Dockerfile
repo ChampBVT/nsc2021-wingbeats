@@ -20,6 +20,6 @@ COPY . /backend
 EXPOSE 8080
 
 # start the dev mode flask
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
+# CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
 # start the uWSGI
-# CMD ["uwsgi", "--ini", "uwsgi_conf.ini"]
+CMD ["uwsgi", "--ini", "uwsgi_conf.ini"]
