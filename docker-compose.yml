@@ -34,6 +34,7 @@ services:
         volumes:
             - './frontend:/frontend'
             - '/frontend/node_modules'
+            - '/frontend/dist'
         #  port allows the host machine to link to container
         # ports:
             # - "8000:8000"
