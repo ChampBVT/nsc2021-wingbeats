@@ -3,3 +3,8 @@ __pycache__/
 */temp*
 */*/temp*
 temp?
+**/.DS_Store
+**/*.icloud
+*.icloud
+.DS_Store
+*.DS_Store
