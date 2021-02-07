@@ -8,12 +8,13 @@
           accept=".wav"
           placeholder="Choose a file or drop it here..."
           drop-placeholder="Drop file here..."
-          v-on:change="checkFileExt"
+          @input="checkFileExt"
+          v-model="file"
         ></b-form-file>
         <span v-if="errStatus" style="color:red">{{ errStatus }}</span>
         <br />
         <b-overlay :show="busy" rounded opacity="0.6" spinner-small spinner-variant="primary" class="">
-          <b-button id="uploadButton" variant="primary" @click="uploadFile" :disabled="!Boolean(file)">Upload</b-button>
+          <b-button id="uploadButton" variant="primary" @click="uploadFile" :disabled="!Boolean(file && !errStatus)">Upload</b-button>
         </b-overlay>
         <b-card-text>
           (Up to 100 MB)<br /><br />
@@ -145,19 +146,18 @@ export default {
       this.rows = json.files;
       this.isLoading = false;
     },
-    checkFileExt(e) {
+    checkFileExt() {
       this.isTouch = true;
-      this.file = null;
       this.errStatus = null;
-      const fileSize = e.target.files[0].size / (1024 * 1024);
-      if (e.target.files.length === 0 || e.target.files[0].type !== 'audio/wav') {
-        return;
+      if (this.file) {
+        const fileSize = this.file.size / (1024 * 1024);
+        if (this.file.type !== 'audio/wav') {
+          this.errStatus = 'The audio file should be in WAV format.';
+        }
+        if (fileSize > limitSize) {
+          this.errStatus = 'File size is too large';
+        }
       }
-      if (fileSize < limitSize) {
-        this.file = e.target.files[0];
-        return;
-      }
-      this.errStatus = 'File size is too large';
     },
     formState() {
       if (this.file && !this.errStatus) return true;

@@ -11,6 +11,8 @@ RUN yarn install
 
 COPY . /frontend
 
+RUN yarn eslint --fix .
+
 EXPOSE 8000
 
 # vue ui --headless --port 8000 --host 0.0.0.0
