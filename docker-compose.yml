@@ -30,7 +30,7 @@ services:
         #  mount the volumes so we can change code and hot reload
         environment: 
             - NODE_ENV=development
-            - CHOKIDAR_USEPOLLING=true
+            #- CHOKIDAR_USEPOLLING=true
         volumes:
             - './frontend:/frontend'
             - '/frontend/node_modules'

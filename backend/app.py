@@ -2,7 +2,7 @@ from flask import Flask, send_file, request
 from flask_cors import CORS, cross_origin
 from pathvalidate import sanitize_filename
 from flask import Blueprint, jsonify
-from src.utils import allowed_file, get_extension, check_length, last_modified, get_duration
+from src.utils import allowed_file, get_extension, check_length, last_modified, get_duration, check_mono
 from src.config import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 from src.predict import predict
 from src.api_spec.swagger import swagger_ui_blueprint, SWAGGER_URL
@@ -57,9 +57,12 @@ def post_audio():
     # TODO
     duplicate_counts = 0
     while os.path.exists(os.path.join(app.config['UPLOAD_FOLDER']) + filename):
-        filename = old_filename.replace('.' + file_ext, '') + " (" + str(duplicate_counts) + ")." + file_ext
         duplicate_counts = duplicate_counts + 1
+        filename = old_filename.replace('.' + file_ext, '') + " (" + str(duplicate_counts) + ")." + file_ext
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    if not check_mono(filename):
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        return jsonify(description="The audio file should be recorded in the Mono channel"), 400
     if not check_length(filename):
         os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
         return jsonify(description="The audio file should be between 0.3 seconds and 120 seconds"), 400

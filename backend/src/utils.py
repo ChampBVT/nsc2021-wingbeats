@@ -24,6 +24,15 @@ def check_length(filename):
         return True
 
 
+def check_mono(filename):
+    x, sr = librosa.load(os.path.join(UPLOAD_FOLDER) + filename, sr=SAMPLING_RATE)
+    try:
+        librosa.util.valid_audio(x)
+        return True
+    except Exception:
+        return False
+
+
 def last_modified(filename, time_format):
     stat = os.stat(os.path.join(UPLOAD_FOLDER) + filename)
     modified_date = datetime.fromtimestamp(stat.st_mtime, tz=bangkok)
