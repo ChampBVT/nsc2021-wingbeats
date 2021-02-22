@@ -118,7 +118,7 @@ export default {
           width: '30%',
         },
         {
-          label: 'Probability',
+          label: 'Confidence',
           field: 'prob',
           type: 'number',
           thClass: 'text-center',
