@@ -6,20 +6,20 @@ WORKDIR /backend
 
 RUN apt-get update && apt-get install -y libsndfile1 ffmpeg
 
+RUN groupadd -r python && useradd -m -r -g python python
+
 # Install the python dependencies
-COPY requirements.txt /backend
+COPY --chown=python:python requirements.txt /backend
 
 RUN pip install -r requirements.txt
 
 # copy current directory to the working directory
-COPY . /backend
+COPY --chown=python:python . /backend
 
 EXPOSE 8080
 
 # start the dev mode flask
 # CMD ["flask", "run", "--host=0.0.0.0", "--port=8080"]
-
-RUN groupadd -r python && useradd -m -r -g python python
 
 USER python
 

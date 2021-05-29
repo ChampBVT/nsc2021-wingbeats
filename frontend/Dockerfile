@@ -20,4 +20,4 @@ RUN yarn build
 
 USER node
 
-CMD [ "yarn", "http-server", "dist", "-p", "8000", "--cors"]
+CMD [ "yarn", "http-server", "dist", "-p", "8000" ]
