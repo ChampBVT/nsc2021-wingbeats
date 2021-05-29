@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { DEV_BACKEND_URL } from "../constant/service";
 
-const api = axios.create({ baseURL: 'http://localhost/api/v1' });
+const api = axios.create({ baseURL: DEV_BACKEND_URL });
 
 api.interceptors.request.use(
   config => {
