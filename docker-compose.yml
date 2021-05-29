@@ -7,12 +7,15 @@ services:
         build: ./backend
         container_name: backend
         restart: always
-        #  mount the volumes so we can change code and hot reload
-        volumes:
-            - './backend:/backend'
+        environment: 
+            - FLASK_APP=app.py
+            - FLASK_ENV=production
+        # mount the volumes so we can change code and hot reload
+        # volumes:
+            # - './backend:/backend'
         #  expose port on the container, only to other containers
-        expose:
-            - 8080
+        # expose:
+            # - 8080
             
     nginx:
         build: ./nginx
@@ -29,11 +32,11 @@ services:
         restart: always
         #  mount the volumes so we can change code and hot reload
         environment: 
-            - NODE_ENV=development
-            #- CHOKIDAR_USEPOLLING=true
-        volumes:
-            - './frontend:/frontend'
-            - '/frontend/node_modules'
+            - NODE_ENV=production
+            # - CHOKIDAR_USEPOLLING=true
+        # volumes:
+            # - './frontend:/usr/src/app'
+            # - '/frontend/node_modules'
         #  port allows the host machine to link to container
         # ports:
             # - "8000:8000"
