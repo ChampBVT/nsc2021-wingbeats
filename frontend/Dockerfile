@@ -1,15 +1,15 @@
 FROM node:lts-alpine
 
 # copy project files and folders to the current working directory (i.e. 'app' folder)
-WORKDIR /usr/src/app
+WORKDIR /frontend
 
-COPY package*.json /usr/src/app
+RUN apk add dumb-init
+
+COPY --chown=node:node package*.json /frontend
 
 RUN yarn install
 
-COPY . /usr/src/app
-
-RUN yarn lint --fix
+COPY --chown=node:node . /frontend
 
 EXPOSE 8000
 
@@ -20,4 +20,4 @@ RUN yarn build
 
 USER node
 
-CMD [ "yarn", "http-server", "dist", "-p", "8000" ]
+CMD [ "dumb-init", "yarn", "http-server", "dist", "-p", "8000" ]
