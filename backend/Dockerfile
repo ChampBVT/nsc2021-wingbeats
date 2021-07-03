@@ -5,20 +5,18 @@ FROM python:3.7.9-slim
 WORKDIR /backend
 
 RUN apt-get update \
-&& apt-get install gcc libsndfile1 ffmpeg -y \
+&& apt-get install gcc libsndfile1 ffmpeg dumb-init -y \
 && apt-get clean
 
 RUN groupadd -r python && useradd -m -r -g python python
 
 # Install the python dependencies
-COPY --chown=python:python requirements.txt /backend
-
-RUN python -m pip install -U pip
+COPY --chown=python:python requirements.txt .
 
 RUN pip install -r requirements.txt
 
 # copy current directory to the working directory
-COPY --chown=python:python . /backend
+COPY --chown=python:python . .
 
 EXPOSE 8080
 
@@ -28,4 +26,4 @@ EXPOSE 8080
 USER python
 
 # start the uWSGI
-CMD ["uwsgi", "--ini", "uwsgi_conf.ini"]
+CMD ["dumb-init", "uwsgi", "--ini", "uwsgi_conf.ini"]
